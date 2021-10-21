@@ -4,10 +4,19 @@ using UnityEngine;
 
 public class Player : Fighter
 {
+    private List<Transform> opponents;
+    public float maxDistToFaceOpponent = 4f;
+
     // Start is called before the first frame update
     private void Start()
     {
         InitCommonComponents();
+        opponents = new List<Transform>();
+    }
+
+    public void RegisterOpponent(Transform opp)
+    {
+        opponents.Add(opp);
     }
 
     // Update is called once per frame
@@ -16,12 +25,33 @@ public class Player : Fighter
         stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         GetMoveDirection();
 
+        OrientPlayerForward();
         base.UpdateFighter();
         HandleJump();
         HandleAttack();
 
         if (transform.position.y < minPossibleY)
             transform.position = initPos;
+    }
+
+    private void OrientPlayerForward()
+    {
+        Vector3 lookDir = moveDir;
+
+        float closestDistance = float.PositiveInfinity;
+        for (int i = 0; i < opponents.Count; i++)
+        {
+            Vector3 toOpponent_i = opponents[i].position - transform.position;
+            float distToOpponent_i = toOpponent_i.magnitude;
+            if (distToOpponent_i < closestDistance && distToOpponent_i < maxDistToFaceOpponent)
+            {
+                closestDistance = distToOpponent_i;
+                lookDir = toOpponent_i.normalized;
+            }
+        }
+        animator.SetFloat("distToEnemy", closestDistance);
+        lookDir = Vector3.ProjectOnPlane(lookDir, Vector3.up);
+        ApplyRootRotation(lookDir.normalized);
     }
 
     private void HandleAttack()

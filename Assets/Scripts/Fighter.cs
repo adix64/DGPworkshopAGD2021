@@ -35,17 +35,16 @@ public class Fighter : MonoBehaviour
         stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         CheckIfGrounded();
         SetAnimatorMoveParams();
-        ApplyRootRotation();
 
         if (transform.position.y < minPossibleY)
             transform.position = initPos;
     }
 
-    private void ApplyRootRotation()
+    protected void ApplyRootRotation(Vector3 lookDir)
     {
-        if (moveDir.magnitude < 0.001F || stateInfo.IsTag("punch")) //nu exista miscare
+        if (lookDir.magnitude < 0.001F || stateInfo.IsTag("punch")) //nu exista miscare
             return;//cod de mai jos discarded, nu rotim cand nu se misca personajul
-        Quaternion newRotation = Quaternion.LookRotation(moveDir);
+        Quaternion newRotation = Quaternion.LookRotation(lookDir);
         //LERP(a, b, t) = a * (1-t) + b * t
         transform.rotation = Quaternion.Slerp(transform.rotation, newRotation, Time.deltaTime * rotSpeed);
     }
