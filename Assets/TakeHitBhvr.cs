@@ -2,42 +2,31 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PunchBhvr : StateMachineBehaviour
+public class TakeHitBhvr : StateMachineBehaviour
 {
-    public HumanBodyBones bone;
-
-    //intervalul in care e activ hitBox >>>
-    public float hitBoxStartT = 0.035f;
-
-    public float hitBoxStopT = 0.2f;
-
-    //<<<
-    public float defaultCapsuleRadius = 0.3f;
-
-    public float radiusMultiplier = 2f;
-
     // OnStateEnter is called when a transition starts and the state machine starts to evaluate this state
     override public void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
     {
+        int takenDamage = animator.GetInteger("takenDamage");
+        int newHP = animator.GetInteger("HP") - takenDamage;
+        animator.SetInteger("HP", newHP);
+        if (newHP < 0)
+        {
+            animator.Play("VesnicaPomenire");
+        }
     }
 
     // OnStateUpdate is called on each Update frame between OnStateEnter and OnStateExit callbacks
-    override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    {
-        var capsule = animator.GetComponent<CapsuleCollider>();
-        capsule.radius = defaultCapsuleRadius * radiusMultiplier;
-
-        float t = stateInfo.normalizedTime;
-        var collider = animator.GetBoneTransform(bone).GetComponent<Collider>();
-        collider.enabled = t > hitBoxStartT && t < hitBoxStopT;
-    }
+    //override public void OnStateUpdate(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    //{
+    //
+    //}
 
     // OnStateExit is called when a transition ends and the state machine finishes evaluating this state
-    override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    {
-        var capsule = animator.GetComponent<CapsuleCollider>();
-        capsule.radius = defaultCapsuleRadius;
-    }
+    //override public void OnStateExit(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    //{
+    //
+    //}
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
     //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

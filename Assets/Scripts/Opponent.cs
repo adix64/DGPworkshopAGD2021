@@ -34,6 +34,8 @@ public class Opponent : Fighter
     // Update is called once per frame
     private void Update()
     {
+        if (stateInfo.IsName("VesnicaPomenire"))
+            return;
         Vector3 toPlayer = player.position - transform.position;
         float distToPlayer = toPlayer.magnitude;
         if (distToPlayer > stoppingDistance)

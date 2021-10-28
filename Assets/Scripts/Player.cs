@@ -6,6 +6,9 @@ public class Player : Fighter
 {
     private List<Transform> opponents;
     public float maxDistToFaceOpponent = 4f;
+    public bool inEnemyRange = false;
+    public float closestDistanceToOpponent = 0f;
+    public Vector3 opponentPos;
 
     // Start is called before the first frame update
     private void Start()
@@ -37,7 +40,7 @@ public class Player : Fighter
     private void OrientPlayerForward()
     {
         Vector3 lookDir = moveDir;
-
+        inEnemyRange = false;
         float closestDistance = float.PositiveInfinity;
         for (int i = 0; i < opponents.Count; i++)
         {
@@ -47,8 +50,11 @@ public class Player : Fighter
             {
                 closestDistance = distToOpponent_i;
                 lookDir = toOpponent_i.normalized;
+                inEnemyRange = true;
+                opponentPos = opponents[i].position;
             }
         }
+        closestDistanceToOpponent = closestDistance;
         animator.SetFloat("distToEnemy", closestDistance);
         lookDir = Vector3.ProjectOnPlane(lookDir, Vector3.up);
         ApplyRootRotation(lookDir.normalized);
