@@ -37,13 +37,14 @@ public class ThirdPersonCamera : MonoBehaviour
         if (playerCtrl.inEnemyRange)
         {
             float f = playerCtrl.closestDistanceToOpponent / playerCtrl.maxDistToFaceOpponent;
-            smoothOpponentPosition = Vector3.Lerp(smoothOpponentPosition, playerCtrl.opponentPos, Time.deltaTime * 5f);
+            smoothOpponentPosition = Vector3.Lerp(smoothOpponentPosition, playerCtrl.opponent.position, Time.deltaTime * 5f);
             target.position = Vector3.Lerp(smoothOpponentPosition, player.position, Mathf.Clamp01(f));
             fov = Mathf.Lerp(30, 60, f);
             realCameraOffset.x = Mathf.Lerp(realCameraOffset.x, 0, Time.deltaTime);
         }
         else
         {
+            smoothOpponentPosition = player.position;
             fov = 60f;
             realCameraOffset.x = Mathf.Lerp(realCameraOffset.x, cameraOffset.x, Time.deltaTime);
         }

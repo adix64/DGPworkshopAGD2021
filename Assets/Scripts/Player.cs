@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : Fighter
 {
@@ -8,7 +9,8 @@ public class Player : Fighter
     public float maxDistToFaceOpponent = 4f;
     public bool inEnemyRange = false;
     public float closestDistanceToOpponent = 0f;
-    public Vector3 opponentPos;
+    public float timeSinceChangedOpponent = 0.5f;
+    public Transform opponent;
 
     // Start is called before the first frame update
     private void Start()
@@ -22,9 +24,16 @@ public class Player : Fighter
         opponents.Add(opp);
     }
 
+    private void CheckAlive()
+    {
+        if (animator.GetInteger("HP") <= 0)
+            SceneManager.LoadScene("Intro");
+    }
+
     // Update is called once per frame
     private void Update()
     {
+        CheckAlive();
         stateInfo = animator.GetCurrentAnimatorStateInfo(0);
         GetMoveDirection();
 
@@ -40,23 +49,28 @@ public class Player : Fighter
     private void OrientPlayerForward()
     {
         Vector3 lookDir = moveDir;
+
         inEnemyRange = false;
         float closestDistance = float.PositiveInfinity;
         for (int i = 0; i < opponents.Count; i++)
         {
             Vector3 toOpponent_i = opponents[i].position - transform.position;
             float distToOpponent_i = toOpponent_i.magnitude;
-            if (distToOpponent_i < closestDistance && distToOpponent_i < maxDistToFaceOpponent)
+            if (distToOpponent_i < closestDistance &&
+                distToOpponent_i < maxDistToFaceOpponent &&//in combat range
+                Vector3.Dot(transform.forward, toOpponent_i.normalized) > 0f) // opponent e in fata lui player
             {
                 closestDistance = distToOpponent_i;
                 lookDir = toOpponent_i.normalized;
                 inEnemyRange = true;
-                opponentPos = opponents[i].position;
+                opponent = opponents[i];
             }
         }
+
         closestDistanceToOpponent = closestDistance;
         animator.SetFloat("distToEnemy", closestDistance);
         lookDir = Vector3.ProjectOnPlane(lookDir, Vector3.up);
+
         ApplyRootRotation(lookDir.normalized);
     }
 
@@ -79,7 +93,7 @@ public class Player : Fighter
     {
         //-1 pentru tasta A, 1 pentru tasta D, 0 altfel
         float x = Input.GetAxis("Horizontal"); //pentru gamepad x in [-1,1]
-        //-1 pentru tasta S, 1 pentru tasta W, 0 altfel
+                                               //-1 pentru tasta S, 1 pentru tasta W, 0 altfel
         float z = Input.GetAxis("Vertical"); //pentru gamepad z in [-1,1]
         moveDir = (camera.right * x + camera.forward * z).normalized;
         moveDir = Vector3.ProjectOnPlane(moveDir, Vector3.up).normalized;

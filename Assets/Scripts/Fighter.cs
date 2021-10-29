@@ -76,8 +76,8 @@ public class Fighter : MonoBehaviour
             for (float offsetZ = -1f; offsetZ <= 1f; offsetZ += 1f)
             {
                 ray.origin = rayOriginBase + new Vector3(offsetX, 0f, offsetZ).normalized * capsule.radius;
-
-                if (Physics.Raycast(ray, 2f * groundedThreshold))
+                LayerMask layerMask = ~LayerMask.NameToLayer("Default");
+                if (Physics.Raycast(ray, 2f * groundedThreshold, layerMask, QueryTriggerInteraction.Ignore))
                 {//exista pamant sub picioare
                     Debug.DrawLine(ray.origin, ray.origin + ray.direction * 2f * groundedThreshold, Color.green);
                     grounded = true;
