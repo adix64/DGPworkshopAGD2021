@@ -51,6 +51,7 @@ public class Player : Fighter
         Vector3 lookDir = moveDir;
 
         inEnemyRange = false;
+        opponent = null;
         float closestDistance = float.PositiveInfinity;
         for (int i = 0; i < opponents.Count; i++)
         {

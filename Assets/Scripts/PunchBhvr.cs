@@ -40,10 +40,23 @@ public class PunchBhvr : StateMachineBehaviour
     }
 
     // OnStateMove is called right after Animator.OnAnimatorMove()
-    //override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
-    //{
-    //    // Implement code that processes and affects root motion
-    //}
+    override public void OnStateMove(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
+    {
+        var rigidbody = animator.GetComponent<Rigidbody>();
+
+        Vector3 snapToOpponentVelocity = Vector3.zero;
+
+        var player = animator.GetComponent<Player>();
+        if (player != null && player.opponent != null)
+            snapToOpponentVelocity = (player.opponent.position - animator.transform.position) * 2f;
+        float velY = rigidbody.velocity.y;
+
+        rigidbody.velocity = animator.deltaPosition / Time.deltaTime + snapToOpponentVelocity;
+
+        rigidbody.velocity = new Vector3(rigidbody.velocity.x,
+                                         velY,
+                                         rigidbody.velocity.z);
+    }
 
     // OnStateIK is called right after Animator.OnAnimatorIK()
     //override public void OnStateIK(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)

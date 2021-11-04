@@ -94,7 +94,7 @@ public class Fighter : MonoBehaviour
 
     protected void SetAnimatorMoveParams()
     {
-        Vector3 characterSpaceMoveDir = transform.InverseTransformDirection(moveDir);
+        Vector3 characterSpaceMoveDir = transform.InverseTransformDirection(moveDir) * 1.2f;
         animator.SetFloat("Forward", characterSpaceMoveDir.z, 0.2f, Time.deltaTime);
         animator.SetFloat("Right", characterSpaceMoveDir.x, 0.2f, Time.deltaTime);
     }
