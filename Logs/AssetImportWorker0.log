@@ -139,3 +139,4 @@ Received Import Request.
 Start importing Assets/CharacterCtrl.controller using Guid(fda6e71b40fe7ef4baa9e0a4be4afa21) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6f5ded5ccf750f3054805792df1ab2fb') in 0.322179 seconds 
   Import took 0.341721 seconds .
 
+AssetImportWorkerClient::OnTransportError - code=2 error=End of file
