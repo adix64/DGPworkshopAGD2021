@@ -9,17 +9,22 @@ public class ThirdPersonCamera : MonoBehaviour
     public Transform player;
     public Transform target;
     public Vector3 cameraOffset;
+    public Vector3 aimingCameraOffset;
     private Player playerCtrl;
+    private Animator playerAnimator;
     private Vector3 realCameraOffset;
     private Camera camera;
     private float fov = 60f;
     private Vector3 smoothOpponentPosition;
+    public float minPitch = -60f;
+    public float maxPitch = 60f;
 
     // Start is called before the first frame update
     private void Start()
     {
         camera = GetComponent<Camera>();
         playerCtrl = player.GetComponent<Player>();
+        playerAnimator = player.GetComponent<Animator>();
         realCameraOffset = cameraOffset;
         smoothOpponentPosition = player.position;
     }
@@ -29,7 +34,7 @@ public class ThirdPersonCamera : MonoBehaviour
     {
         yaw += Input.GetAxis("Mouse X");
         pitch -= Input.GetAxis("Mouse Y");
-        pitch = Mathf.Clamp(pitch, -60f, 60f);
+        pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
 
         transform.rotation = Quaternion.Euler(pitch, yaw, 0f);
 
@@ -50,5 +55,10 @@ public class ThirdPersonCamera : MonoBehaviour
         }
         camera.fieldOfView = fov;
         transform.position = target.position + transform.TransformDirection(realCameraOffset);
+
+        if (playerAnimator.GetBool("Aiming"))
+        {
+            transform.position = player.position + transform.TransformDirection(aimingCameraOffset);
+        }
     }
 }

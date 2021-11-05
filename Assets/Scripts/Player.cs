@@ -11,11 +11,22 @@ public class Player : Fighter
     public float closestDistanceToOpponent = 0f;
     public float timeSinceChangedOpponent = 0.5f;
     public Transform opponent;
+    public Transform weaponTip;
+    public Transform weapon;
+    private Transform chest;
+    private Transform upperChest;
+    private Transform head;
+    private Transform rightHand;
+    private bool aiming = false;
 
     // Start is called before the first frame update
     private void Start()
     {
         InitCommonComponents();
+        chest = animator.GetBoneTransform(HumanBodyBones.Chest);
+        upperChest = animator.GetBoneTransform(HumanBodyBones.UpperChest);
+        rightHand = animator.GetBoneTransform(HumanBodyBones.RightHand);
+        head = animator.GetBoneTransform(HumanBodyBones.Head);
         opponents = new List<Transform>();
     }
 
@@ -40,10 +51,43 @@ public class Player : Fighter
         OrientPlayerForward();
         base.UpdateFighter();
         HandleJump();
+        ShooterUpdate();
         HandleAttack();
 
         if (transform.position.y < minPossibleY)
             transform.position = initPos;
+    }
+
+    private void LateUpdate()
+    {
+        if (!aiming)
+            return;
+
+        CopyRightHandTransformOnWeapon();
+        Quaternion alignWeaponToCamera = Quaternion.FromToRotation(weaponTip.forward,
+                                                                   camera.forward);
+
+        alignWeaponToCamera.ToAngleAxis(out float angle, out Vector3 axis);
+        angle *= 0.5f;//jumatate din rotatie
+        alignWeaponToCamera = Quaternion.AngleAxis(angle, axis);
+        chest.rotation = alignWeaponToCamera * chest.rotation;
+        upperChest.rotation = alignWeaponToCamera * upperChest.rotation;
+        CopyRightHandTransformOnWeapon();
+
+        head.rotation = camera.rotation;
+    }
+
+    private void CopyRightHandTransformOnWeapon()
+    {
+        weapon.position = rightHand.position;
+        weapon.rotation = rightHand.rotation;
+    }
+
+    private void ShooterUpdate()
+    {
+        aiming = Input.GetButton("Fire2");
+        animator.SetBool("Aiming", aiming);
+        weapon.gameObject.SetActive(aiming);
     }
 
     private void OrientPlayerForward()
@@ -72,12 +116,16 @@ public class Player : Fighter
         animator.SetFloat("distToEnemy", closestDistance);
         lookDir = Vector3.ProjectOnPlane(lookDir, Vector3.up);
 
+        if (aiming)
+        {
+            lookDir = Vector3.ProjectOnPlane(camera.transform.forward, Vector3.up);
+        }
         ApplyRootRotation(lookDir.normalized);
     }
 
     private void HandleAttack()
     {
-        if (Input.GetButton("Fire1"))
+        if (!aiming && Input.GetButton("Fire1"))
         {
             animator.SetTrigger("Punch");
         }

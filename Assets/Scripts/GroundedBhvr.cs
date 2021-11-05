@@ -17,7 +17,7 @@ public class GroundedBhvr : StateMachineBehaviour
         // intre 0 si 2 metri: garda 100% ; intre 2 si 4 metri: garda intre 100% si 0%
         // de exemplu, la 3.5 metri, garda este 25%
         float w = 1 - Mathf.Clamp01((distToEnemy - 2f) / 2f);
-        animator.SetLayerWeight(1, w);
+        animator.SetLayerWeight(1, animator.GetBool("Aiming") ? 1f : w);
     }
 
     //clamp(x, a, b) = max(a, min(x, b))
