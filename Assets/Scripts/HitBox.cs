@@ -19,6 +19,9 @@ public class HitBox : MonoBehaviour
             return;
         var animator = other.GetComponentInParent<Animator>();
         animator.SetInteger("takenDamage", damage);
-        animator.Play("takeHit" + side);
+        if (side.CompareTo("") == 0)
+            animator.Play("takeHit" + (Random.Range(0, 2) == 0 ? "L" : "R"));
+        else
+            animator.Play("takeHit" + side);
     }
 }

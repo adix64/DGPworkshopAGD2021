@@ -18,6 +18,8 @@ public class Player : Fighter
     private Transform head;
     private Transform rightHand;
     private bool aiming = false;
+    public GameObject projectilePrefab;
+    public ProjectilePool projectilePool;
 
     // Start is called before the first frame update
     private void Start()
@@ -88,6 +90,10 @@ public class Player : Fighter
         aiming = Input.GetButton("Fire2");
         animator.SetBool("Aiming", aiming);
         weapon.gameObject.SetActive(aiming);
+        if (aiming && Input.GetButtonDown("Fire1"))
+        {//lanseaza proiectil
+            projectilePool.SpawnProjectile(weaponTip.position, weaponTip.rotation);
+        }
     }
 
     private void OrientPlayerForward()
