@@ -16,8 +16,12 @@ public class ThirdPersonCamera : MonoBehaviour
     private Camera camera;
     private float fov = 60f;
     private Vector3 smoothOpponentPosition;
-    public float minPitch = -60f;
-    public float maxPitch = 60f;
+    public float minPitchDefault = -60f;
+    public float maxPitchDefault = 60f;
+    public float minPitchAiming = -60f;
+    public float maxPitchAiming = 60f;
+    public float minFoV= 60f;
+    public float maxFoV= 90f;
 
     // Start is called before the first frame update
     private void Start()
@@ -29,12 +33,32 @@ public class ThirdPersonCamera : MonoBehaviour
         smoothOpponentPosition = player.position;
     }
 
+    float changeInterval(float x, float a, float b, float c, float d)
+    {
+        float x_in_0_1 = x / (b - a);
+        return x_in_0_1 * (d - c) + c;
+    }
+
     // Update is called once per frame
     private void LateUpdate()
     {
         yaw += Input.GetAxis("Mouse X");
         pitch -= Input.GetAxis("Mouse Y");
+
+        float minPitch = minPitchDefault;
+        float maxPitch = maxPitchDefault;
+        
+        if (playerAnimator.GetBool("Aiming"))
+        {
+            minPitch = minPitchAiming;
+            maxPitch = maxPitchAiming;
+        }
         pitch = Mathf.Clamp(pitch, minPitch, maxPitch);
+
+        camera.fieldOfView = changeInterval(pitch, maxPitch, minPitch, minFoV, maxFoV);
+
+
+        Debug.Log("FoV is : " + camera.fieldOfView);
 
         transform.rotation = Quaternion.Euler(pitch, yaw, 0f);
 

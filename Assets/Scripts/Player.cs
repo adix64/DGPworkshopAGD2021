@@ -131,7 +131,7 @@ public class Player : Fighter
 
     private void HandleAttack()
     {
-        if (!aiming && Input.GetButton("Fire1"))
+        if (!aiming && Input.GetButtonDown("Fire1"))
         {
             animator.SetTrigger("Punch");
         }

@@ -6,14 +6,24 @@ public class Projectile : MonoBehaviour
 {
     public float projectileSpeed = 10f;
     public float lifeTime = 0f;
+    TrailRenderer trails;
 
-    // Start is called before the first frame update
-    private void Start()
-    {
-    }
+	private void OnEnable()
+	{
+        lifeTime = 0f;
+        trails = GetComponent<TrailRenderer>();
+        trails.emitting = true;
+        //for (int i = 0; i < trails.positionCount; i++)
+        //    trails.SetPosition(i, transform.position);
+        
+	}
+	private void OnDisable()
+	{
+        trails.emitting = false;
+	}
 
-    // Update is called once per frame
-    private void Update()
+	// Update is called once per frame
+	private void Update()
     {
         lifeTime += Time.deltaTime;
         if (lifeTime > 10f)
