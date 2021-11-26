@@ -53,13 +53,26 @@ public class Player : Fighter
         OrientPlayerForward();
         base.UpdateFighter();
         HandleJump();
+        HandleRoll();
         ShooterUpdate();
         HandleAttack();
 
         if (transform.position.y < minPossibleY)
             transform.position = initPos;
     }
+    private void HandleRoll()
+    {
+        if (Input.GetButtonDown("Roll"))
+        {
+            animator.SetTrigger("Roll");
+            Vector3 rollDir = new Vector3(transform.forward.x, 0, transform.forward.z);
+            if (moveDir.magnitude > 10e-3f) //daca se misca
+                rollDir = new Vector3(moveDir.x, 0, moveDir.z);
 
+            animator.SetFloat("RollX", rollDir.x);
+            animator.SetFloat("RollZ", rollDir.z);
+        }
+    }
     private void LateUpdate()
     {
         if (!aiming)
