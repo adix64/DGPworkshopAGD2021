@@ -42,7 +42,7 @@ public class Fighter : MonoBehaviour
 
     protected void ApplyRootRotation(Vector3 lookDir)
     {
-        if (lookDir.magnitude < 0.001F || stateInfo.IsTag("punch") || stateInfo.IsName("Roll")) //nu exista miscare
+        if (lookDir.magnitude < 0.001F || stateInfo.IsTag("punch") || stateInfo.IsName("Roll") || stateInfo.IsTag("wallRun")) //nu exista miscare
             return;//cod de mai jos discarded, nu rotim cand nu se misca personajul
         Quaternion newRotation = Quaternion.LookRotation(lookDir);
         //LERP(a, b, t) = a * (1-t) + b * t

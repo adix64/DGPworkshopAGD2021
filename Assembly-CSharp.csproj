@@ -61,13 +61,15 @@
     <Compile Include="Assets\Scripts\GroundedBhvr.cs" />
     <Compile Include="Assets\OpponentHP.cs" />
     <Compile Include="Assets\Scripts\ObjectSpawner.cs" />
+    <Compile Include="Assets\RollBhvr.cs" />
     <Compile Include="Assets\Pendulum.cs" />
     <Compile Include="Assets\Scripts\PunchBhvr.cs" />
     <Compile Include="Assets\Projectile.cs" />
     <Compile Include="Assets\Scripts\Player.cs" />
     <Compile Include="Assets\HPctrl.cs" />
     <Compile Include="Assets\TakeHitBhvr.cs" />
-    <Compile Include="Assets\RollBhvr.cs" />
+    <Compile Include="Assets\WallRunBhvr.cs" />
+    <Compile Include="Assets\WallRunEndingBhvr.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="UnityEngine">

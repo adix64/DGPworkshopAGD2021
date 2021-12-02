@@ -20,7 +20,8 @@ public class Player : Fighter
     private bool aiming = false;
     public GameObject projectilePrefab;
     public ProjectilePool projectilePool;
-
+    public bool isWallRunning = false;
+    public Vector3 wallRunDir;
     // Start is called before the first frame update
     private void Start()
     {
@@ -52,6 +53,7 @@ public class Player : Fighter
 
         OrientPlayerForward();
         base.UpdateFighter();
+        HandleWallRun();
         HandleJump();
         HandleRoll();
         ShooterUpdate();
@@ -60,7 +62,53 @@ public class Player : Fighter
         if (transform.position.y < minPossibleY)
             transform.position = initPos;
     }
-    private void HandleRoll()
+    private void HandleWallRun()
+    {
+        if (moveDir.magnitude < 10e-3f)
+        {
+            EnableWallRunning(false);
+            return;//tre sa fugi catre zid daca vrei sa faci wallrun
+        }
+        Ray ray = new Ray();
+        ray.origin = transform.position + Vector3.up * capsule.height / 2f;
+        ray.direction = moveDir;
+        LayerMask layerMask = ~LayerMask.NameToLayer("WallRunnable");
+        float maxWallRunDistance = 1.5f;
+        Debug.DrawLine(ray.origin,
+                       ray.origin + ray.direction * maxWallRunDistance,
+                       Color.green);
+        Debug.DrawLine(transform.position,
+                       transform.position + transform.forward,
+                      Color.cyan);
+
+        if (Physics.Raycast(ray, out RaycastHit hitInfo, maxWallRunDistance, layerMask, QueryTriggerInteraction.Ignore))
+        {//poate sa faca wallrun
+            Vector3 projectedOnWallMoveDir = Vector3.ProjectOnPlane(moveDir, hitInfo.normal);
+            wallRunDir = projectedOnWallMoveDir;
+            Debug.DrawLine(hitInfo.point,
+                           hitInfo.point + projectedOnWallMoveDir * 5f,
+                           Color.red);
+            if (Input.GetButtonDown("Jump"))
+            {
+                Vector3 fwdCrossWallRunDir = Vector3.Cross(transform.forward, wallRunDir);
+                animator.SetBool("wallRunSide", fwdCrossWallRunDir.y < 0);
+                EnableWallRunning(true);
+            }
+        }
+    }
+	private void EnableWallRunning(bool enabled)
+	{
+        if (enabled)
+            StartCoroutine(DisableWallRun(2f));
+        isWallRunning = enabled;
+        animator.SetBool("WallRun", isWallRunning);
+    }
+    IEnumerator DisableWallRun(float timeToDisable) 
+    { 
+        yield return new WaitForSeconds(timeToDisable);
+        EnableWallRunning(false);
+    }
+	private void HandleRoll()
     {
         if (Input.GetButtonDown("Roll"))
         {
@@ -153,7 +201,7 @@ public class Player : Fighter
     private void HandleJump()
     {
         Vector3 jumpDir = (Vector3.up * jumpUpPower + moveDir).normalized;
-        if (grounded && Input.GetButtonDown("Jump"))
+        if (grounded && Input.GetButtonDown("Jump") && !isWallRunning)
             rigidbody.AddForce(jumpDir * jumpPower, ForceMode.VelocityChange);
     }
 

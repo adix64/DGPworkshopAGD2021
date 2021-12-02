@@ -15,7 +15,7 @@ TagManager:
   - HurtBox
   - OppHitBox
   - OppHurtBox
-  - 
+  - WallRunnable
   - 
   - 
   - 
